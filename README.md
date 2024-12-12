@@ -2,13 +2,6 @@ Disclaimer:
 The code accompanying this proposal is a preliminary prototype. It does not represent the final product.
 All code and designs are subject to changes during the development phase.
 
-
-
-
-# Aptos-Grant-DAO
-A decentralized funding platform for supporting early-stage projects on the Aptos blockchain with community-driven governance.
-# Project Proposal: Aptos Grant DAO
-
 ## Overview
 The Aptos Grant DAO aims to develop a decentralized funding platform focused on supporting early-stage projects within the Aptos blockchain ecosystem. This platform will leverage community voting mechanisms, blockchain technology, and decentralized governance to provide financial support to BUIDLers, thereby fostering innovation and growth within the Aptos ecosystem.
 
