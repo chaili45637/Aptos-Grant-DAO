@@ -1,0 +1,78 @@
+from flask import Flask, request, jsonify
+
+# Flask application setup
+app = Flask(__name__)
+
+# In-memory data storage (simulating database)
+projects = []  # Stores project proposals
+votes = {}     # Tracks votes per project
+funds = {}     # Tracks funding per project
+
+@app.route('/submit_project', methods=['POST'])
+def submit_project():
+    """Endpoint to submit a new project proposal."""
+    data = request.json
+    project_id = len(projects) + 1
+    project = {
+        'id': project_id,
+        'name': data['name'],
+        'description': data['description'],
+        'submitted_by': data['submitted_by'],
+        'votes': 0
+    }
+    projects.append(project)
+    votes[project_id] = []
+    funds[project_id] = 0
+    return jsonify({"message": "Project submitted successfully!", "project": project}), 201
+
+@app.route('/get_projects', methods=['GET'])
+def get_projects():
+    """Endpoint to retrieve all submitted projects."""
+    return jsonify({"projects": projects}), 200
+
+@app.route('/vote', methods=['POST'])
+def vote():
+    """Endpoint for users to vote for a project."""
+    data = request.json
+    project_id = data['project_id']
+    user = data['user']
+
+    # Ensure the project exists
+    if project_id > len(projects) or project_id <= 0:
+        return jsonify({"error": "Invalid project ID."}), 404
+
+    # Prevent duplicate votes by the same user
+    if user in votes[project_id]:
+        return jsonify({"error": "User has already voted for this project."}), 400
+
+    # Register the vote
+    votes[project_id].append(user)
+    projects[project_id - 1]['votes'] += 1
+    return jsonify({"message": "Vote recorded successfully!"}), 200
+
+@app.route('/allocate_funds', methods=['POST'])
+def allocate_funds():
+    """Endpoint to allocate funds to a project."""
+    data = request.json
+    project_id = data['project_id']
+    amount = data['amount']
+
+    # Ensure the project exists
+    if project_id > len(projects) or project_id <= 0:
+        return jsonify({"error": "Invalid project ID."}), 404
+
+    # Update the funds for the project
+    funds[project_id] += amount
+    return jsonify({"message": "Funds allocated successfully!", "total_funds": funds[project_id]}), 200
+
+@app.route('/get_funds', methods=['GET'])
+def get_funds():
+    """Endpoint to retrieve funding details for all projects."""
+    funding_details = [{
+        'project_id': project_id,
+        'total_funds': total_funds
+    } for project_id, total_funds in funds.items()]
+    return jsonify({"funding_details": funding_details}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
